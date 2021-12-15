@@ -5,58 +5,70 @@ class App extends React.Component {
     state = {
         minuts:"0",
         second:"0",
-        msecond:"0",
-        interval: ""
+        hours:"0",
+        interval: "",
+        count: ""
     }
 
     onStart = () => {
         if(this.state.interval===""){
             this.state.interval =  setInterval(()=>{
-                this.setState(({msecond, second, minuts})=>{
-                    msecond++
+                this.setState(({second, minuts, hours})=>{
+                    second++
+                    if(second === 60){
+                        minuts++
+                        second = 0
     
-                    if(msecond === 100){
-                        second++
-                        msecond = 0
-    
-                        if(second === 60){
-                            minuts++
-                            second = 0
+                        if(minuts === 60){
+                            hours++
+                            minuts = 0
+                            if (hours === 24) {
+                                alert('Day')
+                            }
                         }
+                        
                     }
                     return{
-                        second,  msecond, minuts
+                        second,  minuts, hours
                     }
-                    
-                    
                 }) 
-            }, 10)
-        }else return
+            }, 1000)
+        }else {this.onStop()}
     }
 
     onStop = () => {
-        this.setState(({minuts, second, msecond, interval})=>{
+        this.setState(({minuts, second, hours, interval})=>{
             clearInterval(interval)
-            interval = ""
-            let min = minuts,
-                sec = second,
-                msec = msecond
+            interval = ''
+            minuts = '0'
+            second = '0'
+            hours = '0'
             return {
-                min, sec, msec, interval
+                minuts, second, hours, interval
             }
         })
     }
 
     onClear = () => {
-        
-        this.setState(({minuts, second, msecond, interval})=>{
-            clearInterval(interval)
-            interval = ""
+        this.setState(({minuts, second, hours,})=>{
             minuts = "0"
             second = "0"
-            msecond = "0"
+            hours = "0"
             return{
-                second,  msecond, minuts, interval
+                second,  hours, minuts, 
+            }
+            
+        })
+        
+
+    }
+
+    onWait = () => {
+        this.setState(({minuts, second, hours, interval, count})=>{
+            clearInterval(interval)
+            interval = ""
+            return {
+                minuts, second, hours, interval, count: ""
             }
         })
     }
@@ -65,12 +77,13 @@ class App extends React.Component {
         return(<>
         {console.log(this.state)}
             <Watch 
-            onStart = {this.onStart} 
-            msecond = {this.state.msecond < 10? `0${this.state.msecond}`:this.state.msecond}
             second = {this.state.second < 10? `0${this.state.second}`:this.state.second}
             minuts = {this.state.minuts < 10? `0${this.state.minuts}`:this.state.minuts}
-            onStop = {this.onStop} 
-            onClear = {this.onClear}/>
+            hours = {this.state.hours < 10? `0${this.state.hours}`:this.state.hours}
+            onStart = {this.onStart} 
+            onClear = {this.onClear}
+            onWait = {this.onWait}
+            />
         </>)
     }
 }

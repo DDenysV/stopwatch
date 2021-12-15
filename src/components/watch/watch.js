@@ -1,16 +1,19 @@
 import React from "react";
 import './watch.css'
 
-function Watch({onStart, onStop, onClear, msecond, second, minuts}) {
+function Watch({onStart, onClear, onWait, second, minuts, hours}) {
     return(<>
         <section className ='watch'>
             <article className='watch-face'>
-                <p className = 'out'><span className = 'min'>{minuts}</span>:<span className = 'sec'>{ second}</span><span className = 'msec'>{msecond}</span></p>
-                <div className = 'btns'>
-                    <p className = 'text'>Что-то на арабском</p>
-                    <button className = 'btn' onClick = {(event)=>{onStop()}}>Stop</button>
-                    <button className = 'btn start' onClick = { (event)=>{onStart()}}>Start</button>
-                    <button className = 'btn' onClick = {(event)=>{onClear()}}>Clear</button>
+                <p className = 'out'>
+                    <span className = 'min'>{hours}</span>
+                    <span className = 'sec'>:{minuts}</span>
+                    <span className = 'sec'>:{second}</span>
+                </p>
+                <div className = 'control-btns'>
+                    <button className = 'btn' onClick = { (event)=>{onStart()}}>Start/Stop</button>
+                    <button className = 'btn' onClick = {(event)=>{onClear()}}>Reset</button>
+                    <button className = 'btn' onClick = {(event)=>{onWait()}}>Wait</button>
                 </div>
             </article>
         </section>

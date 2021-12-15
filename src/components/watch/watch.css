@@ -27,16 +27,6 @@
     background-color:darkkhaki;
 }
 
-.msec {
-    width: 35px;
-    font-size: 30px;
-    margin: 0 0 1px 3px;
-}
-
-.sec {
-    width: 45px;
-}
-
 .min {
     width: 45px;
 }
@@ -47,10 +37,10 @@
     width: 100px;
 }
 
-.btns {
+.control-btns {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-around;
 }
 
 .btn {
@@ -60,8 +50,7 @@
     border-radius: 5px;
     color: white;
     margin: 10px 0;
-    width: 40px;
-    height: 40px;
+    padding: 10px;
     cursor: pointer;
 }
 
