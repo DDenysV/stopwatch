@@ -1,91 +1,68 @@
-import React from 'react'
-import Watch from '../watch/watch'
+import React, {useEffect, useState} from 'react';
+import { interval, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs';
+import WatchFace from '../watch-face/watch-face';
 
-class App extends React.Component {
-    state = {
-        minuts:"0",
-        second:"0",
-        hours:"0",
-        interval: "",
-        count: ""
-    }
+const App = () => {
 
-    onStart = () => {
-        if(this.state.interval===""){
-            this.state.interval =  setInterval(()=>{
-                this.setState(({second, minuts, hours})=>{
-                    second++
-                    if(second === 60){
-                        minuts++
-                        second = 0
-    
-                        if(minuts === 60){
-                            hours++
-                            minuts = 0
-                            if (hours === 24) {
-                                alert('Day')
-                            }
-                        }
-                        
-                    }
-                    return{
-                        second,  minuts, hours
-                    }
-                }) 
-            }, 1000)
-        }else {this.onStop()}
-    }
+    const [status, setStatus] = useState('stop'),
+          [timer, setTimer]   = useState(0),
+          [date, setDate]     = useState(0);
 
-    onStop = () => {
-        this.setState(({minuts, second, hours, interval})=>{
-            clearInterval(interval)
-            interval = ''
-            minuts = '0'
-            second = '0'
-            hours = '0'
-            return {
-                minuts, second, hours, interval
-            }
-        })
-    }
+          useEffect(() => {
+            const unsubscribe$ = new Subject();
+            interval(1000)
+              .pipe(takeUntil(unsubscribe$))
+              .subscribe(() => {
+                if (status === 'start') {
+                    setTimer(val => val += 1);
+                }
+              });
+            return () => {
+              unsubscribe$.next();
+              unsubscribe$.complete();
+            };
+          }, [status]);
 
-    onClear = () => {
-        this.setState(({minuts, second, hours,})=>{
-            minuts = "0"
-            second = "0"
-            hours = "0"
-            return{
-                second,  hours, minuts, 
-            }
-            
-        })
-        
+          const onStartStop = () => {
+            status === 'start'? stop():start()
+          }
+         
+          const start = React.useCallback(() => {
+            setStatus("start");
+          }, []);
+         
+          const stop = React.useCallback(() => {
+            setStatus("stop");
+            setTimer(0);
+          }, []);
+         
+          const onReset = React.useCallback(() => {
+            setTimer(0);
+          }, []);
 
-    }
+          const wait = () => {
+              let thisdate = new Date().getTime()
+                if( thisdate - date < 300) {
+                    onWait()
+                    console.log('Pause')
+                } else {
+                    setDate(thisdate)
+                }
+          }
+         
+          const onWait = React.useCallback(() => {
+            setStatus("wait");
+          }, []);
 
-    onWait = () => {
-        this.setState(({minuts, second, hours, interval, count})=>{
-            clearInterval(interval)
-            interval = ""
-            return {
-                minuts, second, hours, interval, count: ""
-            }
-        })
-    }
+    return(<>
+        <WatchFace
+        timer = {timer}
+        onStart = {onStartStop} 
+        onReset = {onReset}
+        onWait = {wait}/>
+    </>)
 
-    render() {
-        return(<>
-        {console.log(this.state)}
-            <Watch 
-            second = {this.state.second < 10? `0${this.state.second}`:this.state.second}
-            minuts = {this.state.minuts < 10? `0${this.state.minuts}`:this.state.minuts}
-            hours = {this.state.hours < 10? `0${this.state.hours}`:this.state.hours}
-            onStart = {this.onStart} 
-            onClear = {this.onClear}
-            onWait = {this.onWait}
-            />
-        </>)
-    }
 }
 
 export default App
